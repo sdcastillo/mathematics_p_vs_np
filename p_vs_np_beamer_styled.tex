@@ -1,0 +1,420 @@
+\documentclass[aspectratio=43]{beamer}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\usefonttheme{professionalfonts}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{blocks}[rounded][shadow=true]
+
+\usepackage{amsmath,amssymb,graphicx,booktabs,array}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+
+\graphicspath{{plots/}{./}}
+
+% ---- Custom color palette ----
+\definecolor{Midnight}{HTML}{0F172A}
+\definecolor{Slate}{HTML}{1E293B}
+\definecolor{ElectricBlue}{HTML}{38BDF8}
+\definecolor{Violet}{HTML}{8B5CF6}
+\definecolor{Rose}{HTML}{F43F5E}
+\definecolor{SoftWhite}{HTML}{F8FAFC}
+\definecolor{CoolGray}{HTML}{CBD5E1}
+
+% ---- Global beamer styling ----
+\setbeamercolor{background canvas}{bg=SoftWhite}
+\setbeamercolor{normal text}{fg=Midnight,bg=SoftWhite}
+\setbeamercolor{frametitle}{fg=SoftWhite,bg=Midnight}
+\setbeamercolor{title}{fg=SoftWhite}
+\setbeamercolor{subtitle}{fg=CoolGray}
+\setbeamercolor{author}{fg=SoftWhite}
+\setbeamercolor{institute}{fg=CoolGray}
+\setbeamercolor{date}{fg=CoolGray}
+\setbeamercolor{palette primary}{fg=SoftWhite,bg=Midnight}
+\setbeamercolor{palette secondary}{fg=SoftWhite,bg=Slate}
+\setbeamercolor{palette tertiary}{fg=SoftWhite,bg=Violet}
+\setbeamercolor{palette quaternary}{fg=SoftWhite,bg=ElectricBlue}
+\setbeamercolor{section in toc}{fg=Violet}
+\setbeamercolor{subsection in toc}{fg=Slate}
+\setbeamercolor{itemize item}{fg=Violet}
+\setbeamercolor{itemize subitem}{fg=ElectricBlue}
+\setbeamercolor{enumerate item}{fg=Violet}
+\setbeamercolor{block title}{fg=SoftWhite,bg=Violet}
+\setbeamercolor{block body}{fg=Midnight,bg=violet!8}
+\setbeamercolor{alerted text}{fg=Rose}
+\setbeamercolor{caption name}{fg=Violet}
+
+\setbeamerfont{title}{series=\bfseries,size=\LARGE}
+\setbeamerfont{frametitle}{series=\bfseries,size=\large}
+\setbeamerfont{block title}{series=\bfseries}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=Violet,
+  urlcolor=ElectricBlue,
+  citecolor=Rose
+}
+
+\lstset{
+  basicstyle=\ttfamily\scriptsize,
+  breaklines=true,
+  frame=single,
+  columns=fullflexible,
+  showstringspaces=false,
+  keywordstyle=\color{Violet}\bfseries,
+  commentstyle=\color{Slate},
+  stringstyle=\color{Rose},
+  rulecolor=\color{ElectricBlue},
+  backgroundcolor=\color{SoftWhite}
+}
+
+\setbeamertemplate{title page}{
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[Midnight] (current page.south west) rectangle (current page.north east);
+    \fill[Violet,opacity=0.18] ([xshift=-1.0cm,yshift=1.5cm]current page.south east) circle (3.0cm);
+    \fill[ElectricBlue,opacity=0.14] ([xshift=1.0cm,yshift=-1.0cm]current page.north west) circle (2.8cm);
+  \end{tikzpicture}
+  \vbox{}
+  \vfill
+  \begin{center}
+    {\usebeamerfont{title}\usebeamercolor[fg]{title}\inserttitle\par}
+    \vskip0.8em
+    {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle\par}
+    \vskip1.5em
+    {\usebeamerfont{author}\usebeamercolor[fg]{author}\insertauthor\par}
+    \vskip0.4em
+    {\usebeamerfont{institute}\usebeamercolor[fg]{institute}\insertinstitute\par}
+    \vskip1.0em
+    {\usebeamerfont{date}\usebeamercolor[fg]{date}\insertdate\par}
+  \end{center}
+  \vfill
+}
+
+\title[P vs NP]{A Novel Perspective on the P vs NP Problem\\with an AI Co-Pilot Exploration Framework}
+\author[Samuel Castillo]{Samuel Castillo}
+\institute[UMass Amherst]{University of Massachusetts Amherst}
+\date{April 4, 2026}
+
+
+\begin{document}
+
+\begin{frame}[plain]
+\titlepage
+\end{frame}
+
+\begin{frame}{Contents}
+\tableofcontents
+\end{frame}
+
+\section{Motivation}
+
+\begin{frame}{Why This Problem Matters}
+\begin{block}{Core idea}
+\begin{itemize}
+    \item The P vs\@. NP problem asks whether every efficiently verifiable problem is also efficiently solvable.
+    \item It sits at the center of complexity theory, optimization, cryptography, and algorithm design.
+    \item The practical issue is \textbf{computational feasibility}: which problems stay solvable under real limits on time, memory, energy, and hardware.
+    \item This presentation reframes the paper around \textbf{Time-to-Solve (TTS)}, large-scale systems, and an \textbf{AI-assisted exploration framework}.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Real-World Motivation: Travel Systems and Optimization}
+\begin{itemize}
+    \item Large travel systems must forecast demand, allocate inventory, schedule under disruptions, and optimize itineraries.
+    \item Many of these tasks resemble classical combinatorial optimization problems.
+    \item The canonical example is the \textbf{Traveling Salesman Problem (TSP)}:
+\end{itemize}
+
+\medskip
+\centering
+\emph{Given a set of locations and pairwise distances, what is the shortest route that visits each location once and returns to the origin?}
+
+\medskip
+\raggedright
+\begin{itemize}
+    \item Exact solutions typically become infeasible at scale.
+    \item Practical systems rely on heuristics, approximations, decomposition, and predictive models.
+\end{itemize}
+\end{frame}
+
+\section{Formal Definitions}
+
+\begin{frame}{Class $\mathsf{P}$}
+\[
+\mathsf{P}
+=
+\left\{
+L \subseteq \Sigma^*
+\;\middle|\;
+\exists \text{ deterministic Turing machine } M,
+\exists k \in \mathbb{N},
+\text{ such that } M \text{ decides } L
+\text{ in time } O(n^k)
+\right\}
+\]
+
+\begin{itemize}
+    \item Informally: problems solvable in polynomial time.
+    \item Polynomial time is usually treated as the mathematical model of tractability.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Class $\mathsf{NP}$}
+\[
+\mathsf{NP}
+=
+\left\{
+L \subseteq \Sigma^*
+\;\middle|\;
+\exists \text{ nondeterministic Turing machine } M,
+\exists k \in \mathbb{N},
+\text{ such that } M \text{ decides } L
+\text{ in time } O(n^k)
+\right\}
+\]
+
+\medskip
+Equivalent verifier-based definition:
+\[
+x \in L \iff \exists y \in \Sigma^*,\ |y| \le p(|x|),\ V(x,y)=1
+\]
+where $V$ is a deterministic polynomial-time verifier.
+\end{frame}
+
+\begin{frame}{The Central Question}
+\[
+\text{Does } \mathsf{P} = \mathsf{NP}\ ?
+\]
+
+\medskip
+\begin{block}{Equivalent wording}
+Does every language that admits a polynomial-time verifier also admit a polynomial-time decision algorithm?
+\end{block}
+
+\begin{itemize}
+    \item If \(\mathsf{P}=\mathsf{NP}\), many currently intractable search problems would become polynomial-time solvable.
+    \item If \(\mathsf{P}\neq\mathsf{NP}\), then the gap between verification and search is fundamental.
+\end{itemize}
+\end{frame}
+
+\section{Feasibility and Runtime Growth}
+
+\begin{frame}{Time-to-Solve (TTS) and Feasibility}
+\begin{itemize}
+    \item Complexity is not just a theoretical label; it is a practical limit on resources.
+    \item Feasibility depends on:
+    \begin{itemize}
+        \item time,
+        \item memory,
+        \item energy and hardware,
+        \item scalability as input size grows.
+    \end{itemize}
+    \item Polynomial growth is usually manageable.
+    \item Exponential growth quickly outruns any realistic compute budget.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Scaling Behavior by Complexity Class}
+\begin{itemize}
+    \item \textbf{$O(1)$}: constant time
+    \item \textbf{$O(\log n)$}: logarithmic time
+    \item \textbf{$O(n)$}: linear time
+    \item \textbf{$O(n^2)$}: quadratic time
+    \item \textbf{$O(2^n)$}: exponential time
+\end{itemize}
+
+\medskip
+Key idea: the difference between polynomial and exponential time is not a small efficiency gap. It is often the difference between \textbf{practical} and \textbf{impossible}.
+\end{frame}
+
+\begin{frame}{Real Runtime Comparison}
+Assume a machine performing approximately $10^9$ basic operations per second.
+
+\small
+\begin{center}
+\begin{tabular}{@{}cccc@{}}
+\toprule
+Input $n$ & $O(n)$ & $O(n^2)$ & $O(2^n)$ \\
+\midrule
+10  & $10^{-8}$ s & $10^{-7}$ s & $1.0\times10^{-6}$ s \\
+30  & $3\times10^{-8}$ s & $9\times10^{-7}$ s & $1.07$ s \\
+50  & $5\times10^{-8}$ s & $2.5\times10^{-6}$ s & $\approx 13$ days \\
+70  & $7\times10^{-8}$ s & $4.9\times10^{-6}$ s & $\approx 37{,}000$ years \\
+90  & $9\times10^{-8}$ s & $8.1\times10^{-6}$ s & $\approx 39$ billion years \\
+100 & $10^{-7}$ s & $10^{-5}$ s & $\approx 40$ quintillion years \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\normalsize
+By modest input sizes, exponential-time algorithms already exceed any realistic time horizon.
+\end{frame}
+
+\begin{frame}{Interpretation in TTS Terms}
+\begin{block}{Reframing the conjecture}
+Are problems that appear to require exponential time actually solvable in polynomial time?
+\end{block}
+
+\begin{itemize}
+    \item Verification can stay easy while search explodes combinatorially.
+    \item That asymmetry is the practical face of the P vs\@. NP problem.
+    \item Better hardware helps, but exponential growth still wins.
+\end{itemize}
+\end{frame}
+
+\section{Intuition and NP-Completeness}
+
+\begin{frame}{Intuition: Verification vs. Search}
+A useful mental model:
+\begin{itemize}
+    \item \textbf{Verifying} a candidate solution may be fast.
+    \item \textbf{Finding} that solution may require massive search.
+\end{itemize}
+
+\medskip
+Example: \textbf{Sudoku}
+\begin{itemize}
+    \item Checking a completed grid is quick.
+    \item Constructing a valid solution can require extensive search.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{NP-Complete Problems}
+A problem is NP-complete if:
+\begin{itemize}
+    \item it belongs to $\mathsf{NP}$, and
+    \item every problem in $\mathsf{NP}$ reduces to it in polynomial time.
+\end{itemize}
+
+\medskip
+Examples:
+\begin{itemize}
+    \item Traveling Salesman Problem
+    \item Subset Sum
+    \item Knapsack
+\end{itemize}
+
+\medskip
+A polynomial-time algorithm for any NP-complete problem would imply
+\[
+\mathsf{P}=\mathsf{NP}.
+\]
+\end{frame}
+
+\section{Computational Perspective}
+
+\begin{frame}{Empirical Runtime Experiments}
+Even though the conjecture is theoretical, experiments help build intuition.
+
+\begin{lstlisting}[language=C]
+for (int n = 10; n <= 1000; n *= 2) {
+    auto start = now();
+    solve_instance(n);
+    auto end = now();
+    log(n, end - start);
+}
+\end{lstlisting}
+
+\begin{itemize}
+    \item Runtime plots often make the polynomial vs. exponential gap obvious.
+    \item Empirical scaling does not prove complexity class membership, but it helps expose growth behavior.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Cryptography and Hardness Assumptions}
+\begin{itemize}
+    \item Modern cryptography exploits asymmetry between easy verification and hard inversion.
+    \item Examples:
+    \begin{itemize}
+        \item integer factorization,
+        \item discrete logarithms,
+        \item elliptic-curve discrete logarithms,
+        \item cryptographic hash functions.
+    \end{itemize}
+    \item These are evidence that hardness matters in practice.
+    \item But they do \textbf{not} directly resolve $\mathsf{P}$ vs. $\mathsf{NP}$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Blockchain and Post-Quantum Context}
+\begin{itemize}
+    \item Blockchain systems test cryptographic hardness at global scale under adversarial conditions.
+    \item Zero-knowledge systems highlight the distinction between efficient verification and expensive discovery.
+    \item Quantum computing increases pressure on classical hardness assumptions.
+    \item Post-quantum cryptography shifts attention to lattices, hash-based signatures, and new security assumptions.
+\end{itemize}
+\end{frame}
+
+\section{AI Co-Pilot Framework}
+
+\begin{frame}{Why an AI Co-Pilot?}
+The claim is \textbf{not} that AI proves or disproves the conjecture.
+
+\medskip
+The proposal is methodological:
+\begin{itemize}
+    \item organize known results,
+    \item map dependencies among reductions and lemmas,
+    \item generate constrained conjectures,
+    \item explore structured instances empirically,
+    \item interface with theorem provers and symbolic systems.
+\end{itemize}
+
+\medskip
+Workflow:
+\begin{center}
+\emph{human judgment + AI-assisted search + formal/computational validation}
+\end{center}
+\end{frame}
+
+\begin{frame}{Research Directions for the Framework}
+\begin{itemize}
+    \item \textbf{Restricted classes:} bounded treewidth, sparse SAT, planted distributions.
+    \item \textbf{Reduction mining:} catalog shared structural bottlenecks among NP-complete problems.
+    \item \textbf{Proof-barrier cartography:} classify which arguments relativize, algebrize, or resemble natural proofs.
+    \item \textbf{Cryptographic interface:} connect hardness assumptions, pseudorandomness, and lower-bound barriers.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Known Meta-Barriers}
+Any successful proof likely has to escape several known barriers:
+\begin{itemize}
+    \item \textbf{Relativization}
+    \item \textbf{Natural Proofs}
+    \item \textbf{Algebrization}
+\end{itemize}
+
+\medskip
+These barriers help explain why the problem has resisted decades of work.
+\end{frame}
+
+\section{Takeaways}
+
+\begin{frame}{Key Takeaways}
+\begin{itemize}
+    \item P vs\@. NP asks whether efficient verification implies efficient solution.
+    \item The core practical issue is resource-bounded feasibility.
+    \item NP-complete problems model combinatorial explosion.
+    \item Cryptography and large-scale systems make hardness assumptions concrete.
+    \item AI may improve the \emph{research process}, even if the proof itself still needs new mathematics.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Conclusion}
+\begin{itemize}
+    \item The P vs\@. NP problem remains one of the deepest open questions in mathematics and theoretical computer science.
+    \item Its significance extends far beyond abstract definitions: it shapes optimization, cryptography, verification, and the theory of computation.
+    \item An AI co-pilot framework is best viewed as a disciplined assistant for exploration, synthesis, and formal checking.
+    \item The conjecture itself still demands genuinely new mathematical insight.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain]
+\centering
+\Huge Questions?
+\end{frame}
+
+\end{document}
